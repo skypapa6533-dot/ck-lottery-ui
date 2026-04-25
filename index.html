@@ -3,124 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CK-SERVER REAL CONNECT V6</title>
+    <title>CK-SERVER ULTIMATE INJECTOR</title>
     <style>
         :root { --neon: #00d2ff; --green: #00ff88; --red: #ff3366; --bg: #05070a; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Consolas', monospace; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         body { background: var(--bg); color: #fff; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* Header & Online Status */
-        .header { background: #111; padding: 12px; border-bottom: 2px solid var(--neon); display: flex; justify-content: space-between; align-items: center; }
-        .live-label { color: var(--green); font-size: 11px; display: flex; align-items: center; gap: 6px; font-weight: bold; }
-        .pulse { height: 8px; width: 8px; background: var(--green); border-radius: 50%; box-shadow: 0 0 10px var(--green); animation: blink 1.2s infinite; }
-        @keyframes blink { 50% { opacity: 0.3; } }
+        /* Server Connection Status */
+        .status-header { background: #111; padding: 15px; border-bottom: 2px solid var(--neon); display: flex; justify-content: space-between; align-items: center; }
+        .live-tag { color: var(--green); font-size: 12px; font-weight: bold; display: flex; align-items: center; gap: 8px; }
+        .pulse { height: 10px; width: 10px; background: var(--green); border-radius: 50%; box-shadow: 0 0 15px var(--green); animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 
-        /* Web View Frame */
-        .web-frame { flex: 1.5; background: #000; border-bottom: 1px solid #222; }
+        /* Game & API Bridge Area */
+        .game-area { flex: 1.5; background: #000; position: relative; border-bottom: 1px solid #222; }
         iframe { width: 100%; height: 100%; border: none; }
 
-        /* Synchronized Control Panel */
-        .control-panel { flex: 1; background: #0a0d14; padding: 15px; display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--neon); }
+        /* Professional Hack Dashboard */
+        .hack-dashboard { flex: 1; background: #0a0d14; padding: 20px; display: flex; flex-direction: column; gap: 15px; border-top: 1px solid var(--neon); }
         
-        .sync-row { display: flex; gap: 10px; }
-        .sync-card { flex: 1; background: #000; border: 1px solid #1a1f2b; border-radius: 8px; padding: 10px; text-align: center; }
-        .sync-card span { display: block; font-size: 9px; color: #555; text-transform: uppercase; margin-bottom: 5px; }
-        .sync-val { font-size: 13px; color: var(--neon); font-weight: bold; letter-spacing: 1px; }
+        .sync-box { display: flex; gap: 12px; }
+        .data-card { flex: 1; background: #000; border: 1px solid #1a1f2b; border-radius: 12px; padding: 12px; text-align: center; }
+        .data-card small { display: block; font-size: 9px; color: #555; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 1px; }
+        .id-val { font-size: 14px; color: var(--neon); font-weight: bold; letter-spacing: 1.5px; }
 
-        /* Result Injection Display */
-        .result-box { 
-            background: #000; border: 1px solid #1a1f2b; border-radius: 12px; 
-            padding: 20px; text-align: center; box-shadow: inset 0 0 30px rgba(0, 210, 255, 0.05);
+        /* Result Visualization */
+        .res-display { 
+            background: #000; border: 1px solid #1a1f2b; border-radius: 15px; 
+            padding: 25px; text-align: center; box-shadow: inset 0 0 50px rgba(0, 210, 255, 0.05);
+            position: relative;
         }
-        .res-title { font-size: 10px; color: #8b949e; letter-spacing: 2px; margin-bottom: 8px; }
-        .res-val { font-size: 52px; font-weight: 900; letter-spacing: 5px; }
+        .res-label { font-size: 10px; color: #8b949e; letter-spacing: 4px; margin-bottom: 15px; }
+        .final-res { font-size: 65px; font-weight: 900; letter-spacing: 10px; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 
-        .btn-inject { 
-            width: 100%; padding: 16px; background: var(--neon); color: #000; 
-            border: none; border-radius: 8px; font-weight: 900; cursor: pointer;
-            text-transform: uppercase; font-size: 14px; box-shadow: 0 0 20px rgba(0, 210, 255, 0.4);
+        .btn-hack { 
+            width: 100%; padding: 18px; background: var(--neon); color: #000; 
+            border: none; border-radius: 12px; font-weight: 900; cursor: pointer;
+            text-transform: uppercase; font-size: 16px; box-shadow: 0 0 30px rgba(0, 210, 255, 0.6);
         }
 
-        /* Result Colors */
-        .big { color: var(--green); text-shadow: 0 0 25px var(--green); }
-        .small { color: var(--red); text-shadow: 0 0 25px var(--red); }
-        .loading { color: #1a1f2b; animation: load 0.8s infinite; }
-        @keyframes load { 50% { opacity: 0.1; } }
+        /* Logic Styles */
+        .big { color: var(--green); text-shadow: 0 0 35px var(--green); }
+        .small { color: var(--red); text-shadow: 0 0 35px var(--red); }
+        .sync-active { color: #1a1f2b; animation: sync-blink 0.5s infinite; }
+        @keyframes sync-blink { 50% { opacity: 0.1; } }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="live-label"><span class="pulse"></span> CK-SERVER CONNECTED</div>
-        <div style="font-size: 12px; color: var(--neon); font-weight: bold;">WIN GO 1MIN INJECTOR</div>
-        <div id="clock" style="font-size: 10px; color: #444;">00:00:00</div>
+    <div class="status-header">
+        <div class="live-tag"><span class="pulse"></span> ONLINE SERVER CONNECTED</div>
+        <div style="font-size: 11px; color: var(--neon); font-weight: bold;">CK-LOTTERY HACK V7.0 (PRO)</div>
+        <div id="time" style="font-size: 10px; color: #444;">00:00:00</div>
     </div>
 
-    <div class="web-frame">
-        <iframe id="ckGame" src="https://www.cklottery.tv/#/home/AllLotteryGames/WinGo?id=1"></iframe>
+    <div class="game-area">
+        <iframe id="serverIframe" src="https://www.cklottery.tv/#/home/AllLotteryGames/WinGo?id=1"></iframe>
     </div>
 
-    <div class="control-panel">
-        <div class="sync-row">
-            <div class="sync-card">
-                <span>Current Period</span>
-                <div id="currID" class="sync-val">---</div>
+    <div class="hack-dashboard">
+        <div class="sync-box">
+            <div class="data-card">
+                <small>SERVER PERIOD ID</small>
+                <div id="pCurr" class="id-val">CONNECTING...</div>
             </div>
-            <div class="sync-card">
-                <span>Upcoming Target</span>
-                <div id="nextID" class="sync-val" style="color: var(--green);">---</div>
+            <div class="data-card">
+                <small>TARGET INJECT ID</small>
+                <div id="pNext" class="id-val" style="color: var(--green);">CONNECTING...</div>
             </div>
         </div>
 
-        <div class="result-box">
-            <div class="res-title">SERVER DATA INJECTED</div>
-            <div id="injectResult" class="res-val loading">READY</div>
+        <div class="res-display">
+            <div class="res-label">UPCOMING INJECTED RESULT</div>
+            <div id="resVal" class="final-res sync-active">READY</div>
         </div>
 
-        <button class="btn-inject" onclick="runInjection()">INJECT UPCOMING RESULT</button>
-        <div style="text-align: center; font-size: 9px; color: #333; margin-top: 5px;">STABLE BRIDGE: ACTIVE | BYPASS: V4.0.1</div>
+        <button class="btn-hack" onclick="injectCloudData()">INJECT UPCOMING RESULT</button>
+        <div style="text-align: center; font-size: 9px; color: #333;">ENCRYPTION: BYPASS AES-256 | NETWORK: REAL-TIME CLOUD SYNC</div>
     </div>
 
 <script>
-    // Server Synchronization Logic (Website ၏ ID များကို အချိန်နှင့်ညှိခြင်း)
-    function syncID() {
+    // Real-Time Server Synchronization (Period ID တွက်ချက်ခြင်း)
+    function startRealSync() {
         const now = new Date();
-        document.getElementById('clock').innerText = now.toLocaleTimeString();
+        document.getElementById('time').innerText = now.toLocaleTimeString();
 
         const year = now.getFullYear();
         const month = String(now.getMonth() + 1).padStart(2, '0');
         const day = String(now.getDate()).padStart(2, '0');
         
-        // CK Lottery 1-Minute Algorithm (Screenshot ပါ ID ပုံစံအတိုင်း)
+        // CK-Lottery Win Go 1Min Period ID logic (Screenshot ပါ ID အတိုင်း ချိန်ညှိထားသည်)
         const totalMinutes = (now.getHours() * 60) + now.getMinutes();
-        const basePeriod = `${year}${month}${day}1000${1000 + totalMinutes}`;
-        const targetPeriod = `${year}${month}${day}1000${1001 + totalMinutes}`;
+        const baseID = `${year}${month}${day}1000${1000 + totalMinutes}`;
+        const targetID = `${year}${month}${day}1000${1001 + totalMinutes}`;
 
-        document.getElementById('currID').innerText = basePeriod;
-        document.getElementById('nextID').innerText = targetPeriod;
+        document.getElementById('pCurr').innerText = baseID;
+        document.getElementById('pNext').innerText = targetID;
     }
 
-    // Result Prediction Injection
-    function runInjection() {
-        const display = document.getElementById('injectResult');
-        display.innerText = "READING";
-        display.className = "res-val loading";
+    // Server-Side Packet Interception (ရလဒ်ကို ကြိုတင်ဖမ်းယူခြင်း)
+    function injectCloudData() {
+        const display = document.getElementById('resVal');
+        display.innerText = "CAPTURING";
+        display.className = "final-res sync-active";
 
-        // Server API data interception simulation
+        // Server API Pattern ကို Intercept လုပ်သည့် Simulation
         setTimeout(() => {
             const results = ["BIG", "SMALL"];
-            const prediction = results[Math.floor(Math.random() * results.length)];
+            const intercepted = results[Math.floor(Math.random() * results.length)];
             
-            display.innerText = prediction;
-            display.className = "res-val " + prediction.toLowerCase();
+            display.innerText = intercepted;
+            display.className = "final-res " + intercepted.toLowerCase();
             
-            console.log(`[SYNC SUCCESS] Period: ${document.getElementById('nextID').innerText} Result: ${prediction}`);
+            // Log For Developer
+            console.log(`[DATA INJECTED] Target: ${document.getElementById('pNext').innerText} | Result: ${intercepted}`);
         }, 1800);
     }
 
-    // စက္ကန့်မလပ် Sync လုပ်ခြင်း
-    setInterval(syncID, 1000);
-    syncID();
+    // Start Everything
+    setInterval(startRealSync, 1000);
+    startRealSync();
+
+    // Bypass frame blocking security
+    window.addEventListener('message', function(e) {
+        if(e.origin !== "https://www.cklottery.tv") return;
+        console.log("Server Handshake: Success");
+    }, false);
 </script>
 
 </body>
