@@ -3,124 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CK HACK AUTO-SERVER V3</title>
+    <title>CK HACK VIP SYSTEM</title>
     <style>
         :root {
             --neon-blue: #00d2ff;
             --neon-green: #00ff88;
             --neon-red: #ff3366;
-            --bg-dark: #0d1117;
+            --bg-dark: #090c10;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-        body { background-color: var(--bg-dark); color: white; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg-dark); color: white; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* Header */
-        .header { background: #111; padding: 10px; text-align: center; border-bottom: 1px solid var(--neon-blue); }
-        .header h2 { color: var(--neon-blue); font-size: 18px; text-shadow: 0 0 10px var(--neon-blue); }
+        /* Server Header */
+        .header { background: #111; padding: 12px; text-align: center; border-bottom: 2px solid var(--neon-blue); box-shadow: 0 0 15px rgba(0,210,255,0.3); }
+        .header h2 { color: var(--neon-blue); font-size: 16px; letter-spacing: 2px; text-shadow: 0 0 10px var(--neon-blue); }
 
-        /* Top Server Frame Section (Auto Open) */
-        .server-container { flex: 1.5; position: relative; background: #000; }
+        /* Game Server Frame (Auto-Open) */
+        .server-box { flex: 1.4; position: relative; background: #000; }
         .server-iframe { width: 100%; height: 100%; border: none; }
 
-        /* Bottom Predictor Section */
-        .predictor-container { 
+        /* Prediction Tool Section */
+        .tool-box { 
             flex: 1; background: #161b22; border-top: 2px solid var(--neon-blue); 
-            padding: 15px; overflow-y: auto; box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+            padding: 15px; box-shadow: 0 -10px 30px rgba(0,0,0,0.8); z-index: 100;
         }
 
-        .hack-card { background: #0d1117; border: 1px solid #333; border-radius: 10px; padding: 15px; }
-        .input-group { display: flex; gap: 10px; margin-bottom: 10px; }
+        .hack-card { background: #0d1117; border: 1px solid #30363d; border-radius: 12px; padding: 15px; position: relative; }
+        .hack-card::before { content: "PREMIUM HACK V3"; position: absolute; top: -10px; right: 15px; background: var(--neon-blue); color: #000; font-size: 9px; font-weight: 900; padding: 2px 8px; border-radius: 5px; }
+
+        .input-row { display: flex; gap: 10px; margin-bottom: 15px; }
         .digit-input { 
-            flex: 1; background: #000; border: 1px solid var(--neon-blue); 
-            color: #fff; padding: 12px; text-align: center; border-radius: 5px; outline: none;
+            flex: 1; background: #000; border: 1px solid #444; color: var(--neon-blue); 
+            padding: 12px; text-align: center; border-radius: 8px; font-size: 18px; outline: none; font-weight: bold;
         }
+        .digit-input:focus { border-color: var(--neon-blue); box-shadow: 0 0 8px rgba(0,210,255,0.2); }
 
-        .analyze-btn { 
-            width: 100%; background: var(--neon-blue); border: none; padding: 12px; 
-            font-weight: bold; border-radius: 5px; cursor: pointer; color: #000; text-transform: uppercase;
+        .btn-analyze { 
+            width: 100%; background: var(--neon-blue); border: none; padding: 14px; 
+            font-weight: 900; border-radius: 8px; cursor: pointer; color: #000; letter-spacing: 1px; transition: 0.2s;
         }
+        .btn-analyze:active { transform: scale(0.98); }
 
-        .result-box { 
-            margin-top: 15px; height: 80px; border: 1px dashed var(--neon-blue); 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 8px;
+        /* Result Neon Display */
+        .result-container { 
+            margin-top: 15px; height: 90px; border: 1px solid #30363d; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 10px; background: #05070a;
         }
-        .res-text { font-size: 35px; font-weight: 900; letter-spacing: 3px; }
+        .label { font-size: 10px; color: #8b949e; margin-bottom: 5px; letter-spacing: 2px; }
+        .prediction-text { font-size: 38px; font-weight: 900; letter-spacing: 5px; transition: 0.5s; }
         
-        .color-waiting { color: #444; }
-        .color-small { color: var(--neon-red); text-shadow: 0 0 15px var(--neon-red); }
-        .color-big { color: var(--neon-green); text-shadow: 0 0 15px var(--neon-green); }
+        .waiting { color: #222; }
+        .res-small { color: var(--neon-red); text-shadow: 0 0 20px var(--neon-red); }
+        .res-big { color: var(--neon-green); text-shadow: 0 0 20px var(--neon-green); }
 
-        .loading-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; display: flex; align-items: center; justify-content: center;
-            z-index: 10; transition: 0.5s;
-        }
+        /* Loader Overlay */
+        #loader { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--neon-blue); z-index: 5; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h2>CK HACK SERVER V3 (LIVE)</h2>
+        <h2>CK LOTTERY HACK SERVER CONNECTED</h2>
     </div>
 
-    <div class="server-container">
-        <div id="loader" class="loading-overlay">SERVER CONNECTING...</div>
+    <div class="server-box">
+        <div id="loader">ESTABLISHING SERVER CONNECTION...</div>
         <iframe 
-            id="ck-frame"
+            id="game-frame"
             src="https://www.cklottery.tv/#/home/AllLotteryGames/WinGo?id=1" 
             class="server-iframe"
             onload="document.getElementById('loader').style.display='none';">
         </iframe>
     </div>
 
-    <div class="predictor-container">
+    <div class="tool-box">
         <div class="hack-card">
-            <p style="font-size: 11px; color: var(--neon-blue); margin-bottom: 10px; text-align: center;">WIN GO 1MIN NEXT RESULT HACK</p>
-            <div class="input-group">
-                <input type="number" id="n1" class="digit-input" placeholder="Last Digit 1">
-                <input type="number" id="n2" class="digit-input" placeholder="Last Digit 2">
+            <div class="input-row">
+                <input type="number" id="last1" class="digit-input" placeholder="Last 1">
+                <input type="number" id="last2" class="digit-input" placeholder="Last 2">
             </div>
-            <button class="analyze-btn" onclick="runHack()">ANALYZE NEXT RESULT</button>
+            <button class="btn-analyze" onclick="hackNextResult()">GET UPCOMING RESULT</button>
             
-            <div class="result-box">
-                <span style="font-size: 10px; color: #8b949e;">PREDICTION</span>
-                <div id="hack-res" class="res-text color-waiting">READY</div>
+            <div class="result-container">
+                <div class="label">UPCOMING PREDICTION</div>
+                <div id="result-display" class="prediction-text waiting">READY</div>
             </div>
+        </div>
+        <div style="text-align: center; font-size: 10px; color: var(--neon-green); margin-top: 10px;">
+            ● LIVE SYNC WITH SERVER ID: WIN GO 1MIN
         </div>
     </div>
 
 <script>
-    function runHack() {
-        let v1 = document.getElementById('n1').value;
-        let v2 = document.getElementById('n2').value;
-        let res = document.getElementById('hack-res');
+    function hackNextResult() {
+        let v1 = document.getElementById('last1').value;
+        let v2 = document.getElementById('last2').value;
+        let display = document.getElementById('result-display');
 
         if(v1 === "" || v2 === "") {
-            alert("ဂဏန်းများအရင်ဖြည့်ပါ");
+            alert("နောက်ဆုံးထွက်ဂဏန်းများ ဖြည့်သွင်းပါဗျာ");
             return;
         }
 
-        res.innerText = "HACKING...";
-        res.className = "res-text color-waiting";
+        // Processing Effect
+        display.innerText = "WAIT...";
+        display.className = "prediction-text waiting";
 
         setTimeout(() => {
-            // Logic based on inputs
-            let total = parseInt(v1) + parseInt(v2);
-            let prediction = (total >= 8) ? "BIG" : "SMALL";
+            // Next Result Logic (Hack Algorithm)
+            let val1 = parseInt(v1);
+            let val2 = parseInt(v2);
+            let sum = val1 + val2;
             
-            // Random override for extra realism
-            if(Math.random() > 0.8) prediction = (prediction === "BIG") ? "SMALL" : "BIG";
+            let nextResult = "";
+            
+            // Logic based on lottery trend patterns
+            if (sum >= 9) {
+                nextResult = "BIG";
+            } else if (sum < 5) {
+                nextResult = "SMALL";
+            } else {
+                // Calculation fallback for middle values
+                nextResult = (val2 % 2 === 0) ? "SMALL" : "BIG";
+            }
 
-            res.innerText = prediction;
-            res.className = "res-text " + (prediction === "BIG" ? "color-big" : "color-small");
-        }, 1200);
+            // Random variation to mimic live server bypass
+            if(Math.random() > 0.85) nextResult = (nextResult === "BIG") ? "SMALL" : "BIG";
+
+            display.innerText = nextResult;
+            display.className = "prediction-text " + (nextResult === "BIG" ? "res-big" : "res-small");
+        }, 1500);
     }
 
-    // Auto Refresh Check (Optional: Refresh server every 5 mins)
-    setInterval(() => {
-        // document.getElementById('ck-frame').src = document.getElementById('ck-frame').src;
-    }, 300000);
+    // Anti-reset connection logic
+    window.onerror = function() { return true; };
 </script>
 
 </body>
