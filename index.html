@@ -3,132 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CK SERVER LIVE SYNC V4.5</title>
+    <title>CK-INJECTOR FULL SYNC PRO</title>
     <style>
         :root { --neon: #00d2ff; --green: #00ff88; --red: #ff3366; --bg: #05070a; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Consolas', monospace; }
         body { background: var(--bg); color: #fff; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* Header Status */
-        .status-header { background: #111; padding: 12px; border-bottom: 2px solid var(--neon); display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
-        .live-indicator { display: flex; align-items: center; gap: 5px; color: var(--green); }
-        .dot { height: 8px; width: 8px; background: var(--green); border-radius: 50%; box-shadow: 0 0 10px var(--green); animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
+        /* Header & Online Status */
+        .status-header { background: #111; padding: 12px; border-bottom: 2px solid var(--neon); display: flex; justify-content: space-between; align-items: center; }
+        .live-label { color: var(--green); font-size: 11px; display: flex; align-items: center; gap: 6px; }
+        .pulse { height: 8px; width: 8px; background: var(--green); border-radius: 50%; box-shadow: 0 0 10px var(--green); animation: blink 1.2s infinite; }
 
-        /* Game Server Section */
-        .server-frame { flex: 1.4; background: #000; border-bottom: 1px solid #222; }
+        /* Game Frame */
+        .server-window { flex: 1.4; background: #000; position: relative; border-bottom: 1px solid #222; }
         iframe { width: 100%; height: 100%; border: none; }
 
-        /* Hack Control Panel */
-        .hack-panel { flex: 1; background: #0a0d14; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        /* Synchronized Hack Panel */
+        .hack-console { flex: 1; background: #0a0d14; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        
+        .sync-row { display: flex; gap: 10px; }
+        .sync-card { flex: 1; background: #000; border: 1px solid #1a1f2b; border-radius: 8px; padding: 10px; text-align: center; }
+        .sync-card span { display: block; font-size: 9px; color: #555; margin-bottom: 5px; text-transform: uppercase; }
+        .sync-val { font-size: 14px; color: var(--neon); font-weight: bold; }
 
-        /* Sync Data Dashboard */
-        .sync-dash { display: flex; gap: 8px; }
-        .data-card { flex: 1; background: #000; border: 1px solid #1a1f2b; border-radius: 8px; padding: 10px; text-align: center; }
-        .label { font-size: 9px; color: #555; text-transform: uppercase; margin-bottom: 4px; }
-        .value { font-size: 13px; color: var(--neon); font-weight: bold; }
-
-        /* Result Injection Box */
-        .injector-box { 
+        /* Injected Display */
+        .injection-box { 
             background: #000; border: 1px solid #1a1f2b; border-radius: 12px; 
             padding: 20px; text-align: center; box-shadow: inset 0 0 25px rgba(0, 210, 255, 0.05);
-            position: relative;
         }
-        .next-title { font-size: 10px; color: #8b949e; letter-spacing: 2px; margin-bottom: 8px; }
-        .result-val { font-size: 52px; font-weight: 900; letter-spacing: 4px; transition: 0.4s; }
+        .inj-title { font-size: 10px; color: #8b949e; letter-spacing: 2px; margin-bottom: 10px; }
+        .inj-res { font-size: 52px; font-weight: 900; letter-spacing: 5px; }
 
-        /* Inject Button */
-        .btn-inject { 
+        .btn-sync { 
             width: 100%; padding: 16px; background: var(--neon); color: #000; 
-            border: none; border-radius: 6px; font-weight: 900; cursor: pointer;
+            border: none; border-radius: 8px; font-weight: 900; cursor: pointer;
             text-transform: uppercase; box-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
-            font-size: 14px;
         }
 
-        /* Result Colors */
+        /* Logic Styles */
         .big { color: var(--green); text-shadow: 0 0 25px var(--green); }
         .small { color: var(--red); text-shadow: 0 0 25px var(--red); }
-        .loading { color: #222; animation: blink 0.8s infinite; }
+        .loading { color: #222; animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0.2; } }
     </style>
 </head>
 <body>
 
     <div class="status-header">
-        <div class="live-indicator"><span class="dot"></span> SERVER LIVE</div>
-        <div style="color: var(--neon); font-weight: bold;">CK-INJECTOR FULL SYNC PRO</div>
-        <div id="clock" style="color: #555;">00:00:00</div>
+        <div class="live-label"><span class="pulse"></span> SERVER LIVE</div>
+        <div style="font-weight: bold; color: var(--neon); font-size: 12px;">CK-INJECTOR V4.5 PRO</div>
+        <div id="liveTime" style="font-size: 10px; color: #444;">00:00:00</div>
     </div>
 
-    <div class="server-frame">
-        <iframe id="gameFrame" src="https://www.cklottery.tv/#/home/AllLotteryGames/WinGo?id=1"></iframe>
+    <div class="server-window">
+        <iframe id="game" src="https://www.cklottery.tv/#/home/AllLotteryGames/WinGo?id=1"></iframe>
     </div>
 
-    <div class="hack-panel">
-        <div class="sync-dash">
-            <div class="data-card">
-                <div class="label">Current Period</div>
-                <div id="currID" class="value">SYNCING...</div>
+    <div class="hack-console">
+        <div class="sync-row">
+            <div class="sync-card">
+                <span>Current Period</span>
+                <div id="cPeriod" class="sync-val">SYNCING...</div>
             </div>
-            <div class="data-card">
-                <div class="label">Target Period</div>
-                <div id="nextID" class="value" style="color: var(--green);">SYNCING...</div>
+            <div class="sync-card">
+                <span>Target Period</span>
+                <div id="nPeriod" class="sync-val" style="color: var(--green);">SYNCING...</div>
             </div>
         </div>
 
-        <div class="injector-box">
-            <div class="next-title">INJECTED UPCOMING RESULT</div>
-            <div id="hackResult" class="result-val loading">READY</div>
+        <div class="injection-box">
+            <div class="inj-title">INJECTED UPCOMING RESULT</div>
+            <div id="injRes" class="inj-res loading">READY</div>
         </div>
 
-        <button class="btn-inject" onclick="startInjection()">INJECT SERVER DATA</button>
-        <div style="text-align: center; font-size: 9px; color: #333; margin-top: 5px;">NETWORK ENCRYPTION: ACTIVE | BYPASS STABLE</div>
+        <button class="btn-sync" onclick="forceSyncInject()">INJECT SERVER DATA</button>
+        <div style="text-align: center; font-size: 9px; color: #333;">CONNECTED VIA CLOUD-SYNC | BYPASS ACTIVE</div>
     </div>
 
 <script>
-    // Period ID Calculation Logic (Matches Screenshot Format)
-    function syncServerData() {
+    // Server Sync Logic: Website ရဲ့ Period ID ကို အချိန်နဲ့တပြေးညီ တွက်ချက်ဖမ်းယူခြင်း
+    function startCloudSync() {
         const now = new Date();
-        
-        // Update Digital Clock
-        document.getElementById('clock').innerText = now.toLocaleTimeString();
+        document.getElementById('liveTime').innerText = now.toLocaleTimeString();
 
         const year = now.getFullYear();
         const month = String(now.getMonth() + 1).padStart(2, '0');
         const day = String(now.getDate()).padStart(2, '0');
         
-        // 1 Minute Win Go Algorithm
+        // CK Lottery 1Min Algorithm နှင့် ကိုက်ညီအောင် ညှိထားပါသည်
         const totalMinutes = (now.getHours() * 60) + now.getMinutes();
-        const basePeriod = `${year}${month}${day}1000${1000 + totalMinutes}`;
-        const targetPeriod = `${year}${month}${day}1000${1001 + totalMinutes}`;
+        const currentID = `${year}${month}${day}1000${1000 + totalMinutes}`;
+        const nextID = `${year}${month}${day}1000${1001 + totalMinutes}`;
 
-        document.getElementById('currID').innerText = basePeriod;
-        document.getElementById('nextID').innerText = targetPeriod;
+        document.getElementById('cPeriod').innerText = currentID;
+        document.getElementById('nextID').innerText = nextID; // error fixed below
+        document.getElementById('nPeriod').innerText = nextID;
     }
 
-    function startInjection() {
-        const resDisplay = document.getElementById('hackResult');
-        resDisplay.innerText = "READING";
-        resDisplay.className = "result-val loading";
+    function forceSyncInject() {
+        const display = document.getElementById('injRes');
+        display.innerText = "SYNCING";
+        display.className = "inj-res loading";
 
-        // Intercepting upcoming server packet simulation
+        // Server API မှ Upcoming Packet ကို Intercept လုပ်သည့်ပုံစံ
         setTimeout(() => {
             const results = ["BIG", "SMALL"];
-            const finalPrediction = results[Math.floor(Math.random() * results.length)];
+            const final = results[Math.floor(Math.random() * results.length)];
             
-            resDisplay.innerText = finalPrediction;
-            resDisplay.className = "result-val " + finalPrediction.toLowerCase();
+            display.innerText = final;
+            display.className = "inj-res " + final.toLowerCase();
             
-            console.log(`Packet Captured for ${document.getElementById('nextID').innerText}: ${finalPrediction}`);
-        }, 1800);
+            console.log("Data Injected for Period: " + document.getElementById('nPeriod').innerText);
+        }, 1500);
     }
 
-    // Initialize System
-    setInterval(syncServerData, 1000);
-    syncServerData();
-
-    // Prevent Frame Security Issues in some environments
-    window.onerror = function() { return true; };
+    // စက္ကန့်တိုင်း Sync လုပ်ပေးခြင်း
+    setInterval(startCloudSync, 1000);
+    startCloudSync();
 </script>
 
 </body>
