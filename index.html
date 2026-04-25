@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CK HACK UI</title>
+    <style>
+        body { background: #000; color: #0f0; text-align: center; font-family: sans-serif; }
+        .box { border: 2px solid #0f0; padding: 20px; margin: 20px auto; width: 300px; border-radius: 10px; }
+        .btn { background: #0f0; color: #000; padding: 10px 20px; border: none; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>SERVER V3</h2>
+        <p id="status">READY</p>
+        <button class="btn" onclick="hack()">GENERATE</button>
+        <h1 id="result">?</h1>
+    </div>
+    <script>
+        function hack() {
+            const res = ["BIG", "SMALL"];
+            document.getElementById('result').innerText = res[Math.floor(Math.random()*res.length)];
+        }
+    </script>
+</body>
+</html>
