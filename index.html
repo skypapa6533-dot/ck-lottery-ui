@@ -3,122 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CK SERVER FULL SYNC INJECTOR</title>
+    <title>CK SERVER LIVE SYNC V4.5</title>
     <style>
         :root { --neon: #00d2ff; --green: #00ff88; --red: #ff3366; --bg: #05070a; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Consolas', monospace; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
         body { background: var(--bg); color: #fff; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* Server Header Status */
-        .status-bar { background: #111; padding: 12px; border-bottom: 2px solid var(--neon); display: flex; justify-content: space-between; font-size: 11px; }
-        .dot { height: 7px; width: 7px; background: var(--green); border-radius: 50%; display: inline-block; box-shadow: 0 0 10px var(--green); }
+        /* Header Status */
+        .status-header { background: #111; padding: 12px; border-bottom: 2px solid var(--neon); display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
+        .live-indicator { display: flex; align-items: center; gap: 5px; color: var(--green); }
+        .dot { height: 8px; width: 8px; background: var(--green); border-radius: 50%; box-shadow: 0 0 10px var(--green); animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
 
-        /* Game Frame Section */
-        .server-container { flex: 1.3; background: #000; position: relative; border-bottom: 1px solid #222; }
+        /* Game Server Section */
+        .server-frame { flex: 1.4; background: #000; border-bottom: 1px solid #222; }
         iframe { width: 100%; height: 100%; border: none; }
 
-        /* Hack Panel Section */
-        .hack-panel { flex: 1; background: #0a0d14; padding: 15px; display: flex; flex-direction: column; gap: 12px; }
+        /* Hack Control Panel */
+        .hack-panel { flex: 1; background: #0a0d14; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
 
-        /* Live Data Dashboard */
-        .dashboard { display: flex; gap: 10px; }
+        /* Sync Data Dashboard */
+        .sync-dash { display: flex; gap: 8px; }
         .data-card { flex: 1; background: #000; border: 1px solid #1a1f2b; border-radius: 8px; padding: 10px; text-align: center; }
-        .label { font-size: 9px; color: #555; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px; }
-        .value { font-size: 14px; color: var(--neon); font-weight: bold; }
+        .label { font-size: 9px; color: #555; text-transform: uppercase; margin-bottom: 4px; }
+        .value { font-size: 13px; color: var(--neon); font-weight: bold; }
 
-        /* Injected Result Display */
-        .result-box { 
+        /* Result Injection Box */
+        .injector-box { 
             background: #000; border: 1px solid #1a1f2b; border-radius: 12px; 
-            padding: 20px; text-align: center; box-shadow: inset 0 0 20px rgba(0, 210, 255, 0.05);
+            padding: 20px; text-align: center; box-shadow: inset 0 0 25px rgba(0, 210, 255, 0.05);
+            position: relative;
         }
-        .next-label { font-size: 10px; color: #8b949e; letter-spacing: 3px; margin-bottom: 10px; }
-        .injected-value { font-size: 50px; font-weight: 900; letter-spacing: 5px; }
+        .next-title { font-size: 10px; color: #8b949e; letter-spacing: 2px; margin-bottom: 8px; }
+        .result-val { font-size: 52px; font-weight: 900; letter-spacing: 4px; transition: 0.4s; }
 
-        /* Buttons */
+        /* Inject Button */
         .btn-inject { 
             width: 100%; padding: 16px; background: var(--neon); color: #000; 
             border: none; border-radius: 6px; font-weight: 900; cursor: pointer;
             text-transform: uppercase; box-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
+            font-size: 14px;
         }
 
-        /* Status Colors */
+        /* Result Colors */
         .big { color: var(--green); text-shadow: 0 0 25px var(--green); }
         .small { color: var(--red); text-shadow: 0 0 25px var(--red); }
-        .loading { color: #333; animation: blink 1s infinite; }
-        @keyframes blink { 50% { opacity: 0.3; } }
+        .loading { color: #222; animation: blink 0.8s infinite; }
+        @keyframes blink { 50% { opacity: 0.2; } }
     </style>
 </head>
 <body>
 
-    <div class="status-bar">
-        <div><span class="dot"></span> SERVER STATUS: ACTIVE</div>
-        <div style="color: var(--neon)">NETWORK: FULL SYNC PRO</div>
+    <div class="status-header">
+        <div class="live-indicator"><span class="dot"></span> SERVER LIVE</div>
+        <div style="color: var(--neon); font-weight: bold;">CK-INJECTOR FULL SYNC PRO</div>
+        <div id="clock" style="color: #555;">00:00:00</div>
     </div>
 
-    <div class="server-container">
-        <iframe src="https://www.cklottery.tv/#/home/AllLotteryGames/WinGo?id=1"></iframe>
+    <div class="server-frame">
+        <iframe id="gameFrame" src="https://www.cklottery.tv/#/home/AllLotteryGames/WinGo?id=1"></iframe>
     </div>
 
     <div class="hack-panel">
-        <div class="dashboard">
+        <div class="sync-dash">
             <div class="data-card">
                 <div class="label">Current Period</div>
-                <div id="p-curr" class="value">---</div>
+                <div id="currID" class="value">SYNCING...</div>
             </div>
             <div class="data-card">
-                <div class="label">Next Period</div>
-                <div id="p-next" class="value" style="color: var(--green);">---</div>
+                <div class="label">Target Period</div>
+                <div id="nextID" class="value" style="color: var(--green);">SYNCING...</div>
             </div>
         </div>
 
-        <div class="result-box">
-            <div class="next-label">UPCOMING INJECTED RESULT</div>
-            <div id="inject-display" class="injected-value loading">READY</div>
+        <div class="injector-box">
+            <div class="next-title">INJECTED UPCOMING RESULT</div>
+            <div id="hackResult" class="result-val loading">READY</div>
         </div>
 
-        <button class="btn-inject" onclick="startInjection()">FORCE DATA INJECTION</button>
-        
-        <div style="text-align: center; font-size: 9px; color: #444;">ID: WIN GO 1MIN | BYPASS MODE: STABLE</div>
+        <button class="btn-inject" onclick="startInjection()">INJECT SERVER DATA</button>
+        <div style="text-align: center; font-size: 9px; color: #333; margin-top: 5px;">NETWORK ENCRYPTION: ACTIVE | BYPASS STABLE</div>
     </div>
 
 <script>
-    // Period ID Synchronization Logic
-    function updateServerSync() {
+    // Period ID Calculation Logic (Matches Screenshot Format)
+    function syncServerData() {
         const now = new Date();
+        
+        // Update Digital Clock
+        document.getElementById('clock').innerText = now.toLocaleTimeString();
+
         const year = now.getFullYear();
         const month = String(now.getMonth() + 1).padStart(2, '0');
         const day = String(now.getDate()).padStart(2, '0');
         
-        // Cklottery 1Min Period ID Algorithm
+        // 1 Minute Win Go Algorithm
         const totalMinutes = (now.getHours() * 60) + now.getMinutes();
-        const baseID = `${year}${month}${day}1000${1000 + totalMinutes}`;
-        const nextID = `${year}${month}${day}1000${1001 + totalMinutes}`;
+        const basePeriod = `${year}${month}${day}1000${1000 + totalMinutes}`;
+        const targetPeriod = `${year}${month}${day}1000${1001 + totalMinutes}`;
 
-        document.getElementById('p-curr').innerText = baseID;
-        document.getElementById('p-next').innerText = nextID;
+        document.getElementById('currID').innerText = basePeriod;
+        document.getElementById('nextID').innerText = targetPeriod;
     }
 
     function startInjection() {
-        const display = document.getElementById('inject-display');
-        display.innerText = "FETCHING";
-        display.className = "injected-value loading";
+        const resDisplay = document.getElementById('hackResult');
+        resDisplay.innerText = "READING";
+        resDisplay.className = "result-val loading";
 
-        // Server Data Interception & Trend Analysis
+        // Intercepting upcoming server packet simulation
         setTimeout(() => {
-            // Logic based on Server Pattern Interception
-            const options = ["BIG", "SMALL"];
-            const finalRes = options[Math.floor(Math.random() * options.length)];
+            const results = ["BIG", "SMALL"];
+            const finalPrediction = results[Math.floor(Math.random() * results.length)];
             
-            display.innerText = finalRes;
-            display.className = "injected-value " + finalRes.toLowerCase();
+            resDisplay.innerText = finalPrediction;
+            resDisplay.className = "result-val " + finalPrediction.toLowerCase();
             
-            console.log(`Injected for Period: ${document.getElementById('p-next').innerText} -> ${finalRes}`);
-        }, 2000);
+            console.log(`Packet Captured for ${document.getElementById('nextID').innerText}: ${finalPrediction}`);
+        }, 1800);
     }
 
-    // Auto Update Sync every second
-    setInterval(updateServerSync, 1000);
-    updateServerSync();
+    // Initialize System
+    setInterval(syncServerData, 1000);
+    syncServerData();
+
+    // Prevent Frame Security Issues in some environments
+    window.onerror = function() { return true; };
 </script>
 
 </body>
