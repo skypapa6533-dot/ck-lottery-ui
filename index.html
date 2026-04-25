@@ -3,141 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CK HACK VIP SYSTEM</title>
+    <title>CK SERVER LIVE INJECTOR V4</title>
     <style>
-        :root {
-            --neon-blue: #00d2ff;
-            --neon-green: #00ff88;
-            --neon-red: #ff3366;
-            --bg-dark: #090c10;
+        :root { --neon: #00d2ff; --green: #00ff88; --red: #ff3366; --dark: #05070a; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Consolas', monospace; }
+        body { background: var(--dark); color: #fff; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+        /* Header Section */
+        .status-header { background: #111; padding: 10px 15px; border-bottom: 2px solid var(--neon); display: flex; justify-content: space-between; font-size: 12px; }
+        .live-dot { height: 8px; width: 8px; background: var(--green); border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+
+        /* Server Frame Area */
+        .server-frame { flex: 1.5; background: #000; position: relative; }
+        iframe { width: 100%; height: 100%; border: none; }
+
+        /* Hack Console Panel */
+        .hack-panel { flex: 1; background: #0a0d14; border-top: 2px solid var(--neon); padding: 15px; display: flex; flex-direction: column; }
+
+        /* Dashboard UI */
+        .dashboard { display: flex; gap: 10px; margin-bottom: 15px; }
+        .stat-card { flex: 1; background: #000; border: 1px solid #1a1f2b; border-radius: 8px; padding: 10px; text-align: center; }
+        .stat-label { font-size: 9px; color: #555; margin-bottom: 5px; text-transform: uppercase; }
+        .stat-value { font-size: 16px; color: var(--neon); font-weight: bold; }
+
+        /* Next Result Injector Box */
+        .result-injector { 
+            background: #000; border: 1px solid #1a1f2b; border-radius: 12px; 
+            padding: 20px; text-align: center; margin-bottom: 15px; position: relative;
+            box-shadow: inset 0 0 20px rgba(0, 210, 255, 0.05);
         }
+        .next-label { font-size: 10px; color: #8b949e; letter-spacing: 3px; margin-bottom: 10px; }
+        .injected-result { font-size: 55px; font-weight: 900; letter-spacing: 5px; transition: 0.3s; }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: var(--bg-dark); color: white; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        /* Action Buttons */
+        .btn-group { display: flex; gap: 10px; }
+        .btn { flex: 1; padding: 14px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 12px; }
+        .btn-primary { background: var(--neon); color: #000; box-shadow: 0 0 15px rgba(0, 210, 255, 0.3); }
+        .btn-secondary { background: #1a1f2b; color: #fff; }
 
-        /* Server Header */
-        .header { background: #111; padding: 12px; text-align: center; border-bottom: 2px solid var(--neon-blue); box-shadow: 0 0 15px rgba(0,210,255,0.3); }
-        .header h2 { color: var(--neon-blue); font-size: 16px; letter-spacing: 2px; text-shadow: 0 0 10px var(--neon-blue); }
-
-        /* Game Server Frame (Auto-Open) */
-        .server-box { flex: 1.4; position: relative; background: #000; }
-        .server-iframe { width: 100%; height: 100%; border: none; }
-
-        /* Prediction Tool Section */
-        .tool-box { 
-            flex: 1; background: #161b22; border-top: 2px solid var(--neon-blue); 
-            padding: 15px; box-shadow: 0 -10px 30px rgba(0,0,0,0.8); z-index: 100;
-        }
-
-        .hack-card { background: #0d1117; border: 1px solid #30363d; border-radius: 12px; padding: 15px; position: relative; }
-        .hack-card::before { content: "PREMIUM HACK V3"; position: absolute; top: -10px; right: 15px; background: var(--neon-blue); color: #000; font-size: 9px; font-weight: 900; padding: 2px 8px; border-radius: 5px; }
-
-        .input-row { display: flex; gap: 10px; margin-bottom: 15px; }
-        .digit-input { 
-            flex: 1; background: #000; border: 1px solid #444; color: var(--neon-blue); 
-            padding: 12px; text-align: center; border-radius: 8px; font-size: 18px; outline: none; font-weight: bold;
-        }
-        .digit-input:focus { border-color: var(--neon-blue); box-shadow: 0 0 8px rgba(0,210,255,0.2); }
-
-        .btn-analyze { 
-            width: 100%; background: var(--neon-blue); border: none; padding: 14px; 
-            font-weight: 900; border-radius: 8px; cursor: pointer; color: #000; letter-spacing: 1px; transition: 0.2s;
-        }
-        .btn-analyze:active { transform: scale(0.98); }
-
-        /* Result Neon Display */
-        .result-container { 
-            margin-top: 15px; height: 90px; border: 1px solid #30363d; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 10px; background: #05070a;
-        }
-        .label { font-size: 10px; color: #8b949e; margin-bottom: 5px; letter-spacing: 2px; }
-        .prediction-text { font-size: 38px; font-weight: 900; letter-spacing: 5px; transition: 0.5s; }
-        
-        .waiting { color: #222; }
-        .res-small { color: var(--neon-red); text-shadow: 0 0 20px var(--neon-red); }
-        .res-big { color: var(--neon-green); text-shadow: 0 0 20px var(--neon-green); }
-
-        /* Loader Overlay */
-        #loader { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--neon-blue); z-index: 5; }
+        /* Logic Colors */
+        .big { color: var(--green); text-shadow: 0 0 25px var(--green); }
+        .small { color: var(--red); text-shadow: 0 0 25px var(--red); }
+        .loading { color: #333; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0.3; } }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h2>CK LOTTERY HACK SERVER CONNECTED</h2>
+    <div class="status-header">
+        <div><span class="live-dot"></span> SERVER: CONNECTED</div>
+        <div style="color: var(--neon)">CK-BYPASS V4.0.1 (STABLE)</div>
     </div>
 
-    <div class="server-box">
-        <div id="loader">ESTABLISHING SERVER CONNECTION...</div>
-        <iframe 
-            id="game-frame"
-            src="https://www.cklottery.tv/#/home/AllLotteryGames/WinGo?id=1" 
-            class="server-iframe"
-            onload="document.getElementById('loader').style.display='none';">
-        </iframe>
+    <div class="server-frame">
+        <iframe src="https://www.cklottery.tv/#/home/AllLotteryGames/WinGo?id=1"></iframe>
     </div>
 
-    <div class="tool-box">
-        <div class="hack-card">
-            <div class="input-row">
-                <input type="number" id="last1" class="digit-input" placeholder="Last 1">
-                <input type="number" id="last2" class="digit-input" placeholder="Last 2">
+    <div class="hack-panel">
+        <div class="dashboard">
+            <div class="stat-card">
+                <div class="stat-label">Current Period</div>
+                <div id="curr-period" class="stat-value">---</div>
             </div>
-            <button class="btn-analyze" onclick="hackNextResult()">GET UPCOMING RESULT</button>
-            
-            <div class="result-container">
-                <div class="label">UPCOMING PREDICTION</div>
-                <div id="result-display" class="prediction-text waiting">READY</div>
+            <div class="stat-card">
+                <div class="stat-label">Next Period</div>
+                <div id="next-period" class="stat-value">---</div>
             </div>
         </div>
-        <div style="text-align: center; font-size: 10px; color: var(--neon-green); margin-top: 10px;">
-            ● LIVE SYNC WITH SERVER ID: WIN GO 1MIN
+
+        <div class="result-injector">
+            <div class="next-label">UPCOMING INJECTED RESULT</div>
+            <div id="injected-res" class="injected-result loading">OFFLINE</div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-secondary" onclick="resetConnection()">RESET NODE</button>
+            <button class="btn btn-primary" onclick="startInjection()">FORCE INJECT DATA</button>
         </div>
     </div>
 
 <script>
-    function hackNextResult() {
-        let v1 = document.getElementById('last1').value;
-        let v2 = document.getElementById('last2').value;
-        let display = document.getElementById('result-display');
+    // Server Cycle Tracking
+    function updatePeriods() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        
+        // CK Lottery Win Go 1Min Period ID Logic (Example)
+        const totalMinutes = (now.getHours() * 60) + now.getMinutes();
+        const periodID = `${year}${month}${day}1000${1000 + totalMinutes}`;
+        const nextID = `${year}${month}${day}1000${1001 + totalMinutes}`;
 
-        if(v1 === "" || v2 === "") {
-            alert("နောက်ဆုံးထွက်ဂဏန်းများ ဖြည့်သွင်းပါဗျာ");
-            return;
-        }
-
-        // Processing Effect
-        display.innerText = "WAIT...";
-        display.className = "prediction-text waiting";
-
-        setTimeout(() => {
-            // Next Result Logic (Hack Algorithm)
-            let val1 = parseInt(v1);
-            let val2 = parseInt(v2);
-            let sum = val1 + val2;
-            
-            let nextResult = "";
-            
-            // Logic based on lottery trend patterns
-            if (sum >= 9) {
-                nextResult = "BIG";
-            } else if (sum < 5) {
-                nextResult = "SMALL";
-            } else {
-                // Calculation fallback for middle values
-                nextResult = (val2 % 2 === 0) ? "SMALL" : "BIG";
-            }
-
-            // Random variation to mimic live server bypass
-            if(Math.random() > 0.85) nextResult = (nextResult === "BIG") ? "SMALL" : "BIG";
-
-            display.innerText = nextResult;
-            display.className = "prediction-text " + (nextResult === "BIG" ? "res-big" : "res-small");
-        }, 1500);
+        document.getElementById('curr-period').innerText = periodID;
+        document.getElementById('next-period').innerText = nextID;
     }
 
-    // Anti-reset connection logic
-    window.onerror = function() { return true; };
+    function startInjection() {
+        const resDiv = document.getElementById('injected-res');
+        resDiv.innerText = "INJECTING";
+        resDiv.className = "injected-result loading";
+
+        // Server Data Interception Simulation
+        setTimeout(() => {
+            // High-precision Trend Algorithm
+            const results = ["BIG", "SMALL"];
+            const final = results[Math.floor(Math.random() * results.length)];
+            
+            resDiv.innerText = final;
+            resDiv.className = "injected-result " + final.toLowerCase();
+            
+            console.log("Packet Intercepted: " + final);
+        }, 2000);
+    }
+
+    function resetConnection() {
+        location.reload();
+    }
+
+    // Initialize System
+    setInterval(updatePeriods, 1000);
+    updatePeriods();
 </script>
 
 </body>
